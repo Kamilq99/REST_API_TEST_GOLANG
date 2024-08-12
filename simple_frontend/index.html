@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Książek</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .read {
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Lista Książek</h1>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tytuł</th>
+            <th>Autor</th>
+            <th>Przeczytana</th>
+        </tr>
+    </thead>
+    <tbody id="books-list">
+        <!-- Książki będą załadowane tutaj -->
+    </tbody>
+</table>
+
+<script>
+    async function fetchBooks() {
+        const response = await fetch('/books');
+        const books = await response.json();
+        const booksList = document.getElementById('books-list');
+        booksList.innerHTML = '';
+
+        books.forEach(book => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${book.ID}</td>
+                <td>${book.Tittle}</td>
+                <td>${book.Author}</td>
+                <td>
+                    <input type="checkbox" ${book.Already_Read ? 'checked' : ''} onchange="toggleReadStatus('${book.ID}', this)">
+                </td>
+            `;
+            if (book.Already_Read) {
+                row.classList.add('read');
+            }
+            booksList.appendChild(row);
+        });
+    }
+
+    async function toggleReadStatus(bookId, checkbox) {
+        const response = await fetch(`/books/${bookId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ Already_Read: checkbox.checked })
+        });
+        if (response.ok) {
+            fetchBooks();
+        } else {
+            console.error('Error updating read status');
+        }
+    }
+
+    window.onload = fetchBooks;
+</script>
+
+</body>
+</html>
