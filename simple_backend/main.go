@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,10 +33,11 @@ func getMainPage(context *gin.Context) {
 
 func main() {
 	router := gin.Default()
+	router.Use(cors.Default())
 	router.Static("/simple_frontend", "../simple_frontend")
 	router.GET("/", getMainPage)
 
 	router.GET("/books", getBooks)
 
-	router.Run("localhost:8080")
+	router.Run(":8080")
 }
