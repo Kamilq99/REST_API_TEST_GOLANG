@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  simple_backend:
+    build:
+      context: ./simple_backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./simple_backend:/app
+
+  simple_frontend:
+    build:
+      context: ./simple_frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - BACKEND_URL=http://simple_backend:8080
+    volumes:
+      - ./simple_frontend:/app
+
+volumes:
+  simple_backend:
+  simple_frontend:
